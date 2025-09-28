@@ -169,6 +169,7 @@ plt.grid(True)
 plt.savefig('horn.png')
 plt.show()
 ```
+![](images/horn.png)
 
 Задание 2
 
