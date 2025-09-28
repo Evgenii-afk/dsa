@@ -41,12 +41,20 @@ ax = plt.gca()
 plt.title('The execution time of the sum of list numbers algorithm')
 ax.set_xlabel('Number of elements')
 ax.set_ylabel('Time, sec')
-plt.show()
 plt.savefig('sum.png')
+plt.show()
+
+```
+
+```python
 
 ```
 
 1.3 произведение эллементов
+
+```python
+
+```
 
 ```python
 import random, usage_time
@@ -77,6 +85,7 @@ plt.title('The execution time of the get multiplication of list numbers algorith
 ax.set_xlabel('Number of elements')
 ax.set_ylabel('Time, sec')
 plt.savefig('mult.png')
+plt.show()
 ```
 
 ```python
@@ -119,8 +128,8 @@ plt.title('The execution time of the getting min of list numbers algorithm')
 ax.set_xlabel('Number of elements')
 ax.set_ylabel('Time, sec')
 plt.grid(True)
-plt.show()
 plt.savefig('min.png')
+plt.show()
 ```
 
 ```python
@@ -163,8 +172,8 @@ plt.title('Execution time of polynomial evaluation by Horner\'s method')
 ax.set_xlabel('Number of polynomial coefficients')
 ax.set_ylabel('Time, sec')
 plt.grid(True)
-plt.show()
 plt.savefig('horn.png')
+plt.show()
 ```
 
 ```python
