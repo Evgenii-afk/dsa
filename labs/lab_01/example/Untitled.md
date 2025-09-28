@@ -170,4 +170,59 @@ plt.savefig('horn.png')
 plt.show()
 ```
 
-![](images/horn.png)
+Задание 2
+
+```python
+import random, usage_time
+import matplotlib.pyplot as plt
+
+
+def matrix_mult(matrix_a: list, matrix_b: list):
+    matrix_c = [
+        [0 for _ in range(len(matrix_a))]
+        for _ in range(len(matrix_a))
+    ]
+
+    for y in range(len(matrix_a)):
+        for x in range(len(matrix_a)):
+            num = 0
+            for i in range(len(matrix_a)):
+                num += matrix_a[y][i] * matrix_b[i][x]
+            matrix_c[y][x] = num
+    print(len(matrix_a))
+    return matrix_c
+
+
+items = range(1, 10**2 * (20 - 6), 100)
+func = usage_time.get_usage_time()(matrix_mult)
+times = [
+    func(
+        [
+            [
+                random.randint(1, 3)
+                for _ in range(n)
+            ]
+            for _ in range(n)
+        ],
+        [
+            [
+                random.randint(4, 6)
+                for _ in range(n)
+            ]
+            for _ in range(n)
+        ]
+    )
+    for n in items
+]
+
+fig = plt.plot(items, times, 'bo-')
+ax = plt.gca()
+
+plt.title('The execution time of the get matrix multiplication of list numbers algorithm')
+ax.set_xlabel('Number of elements')
+ax.set_ylabel('Time, sec')
+plt.savefig('matr.png')
+plt.show()
+```
+
+![](images/matr.png)
