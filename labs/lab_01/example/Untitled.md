@@ -42,6 +42,7 @@ plt.title('The execution time of the sum of list numbers algorithm')
 ax.set_xlabel('Number of elements')
 ax.set_ylabel('Time, sec')
 plt.show()
+plt.savefig('sum.png')
 
 ```
 
@@ -75,6 +76,11 @@ ax = plt.gca()
 plt.title('The execution time of the get multiplication of list numbers algorithm')
 ax.set_xlabel('Number of elements')
 ax.set_ylabel('Time, sec')
+plt.savefig('mult.png')
+```
+
+```python
+
 ```
 
 1.6. поиск минимума простым перебором
@@ -114,6 +120,11 @@ ax.set_xlabel('Number of elements')
 ax.set_ylabel('Time, sec')
 plt.grid(True)
 plt.show()
+plt.savefig('min.png')
+```
+
+```python
+
 ```
 
 1.4. вычисление полинома методом Горнера 
@@ -153,4 +164,9 @@ ax.set_xlabel('Number of polynomial coefficients')
 ax.set_ylabel('Time, sec')
 plt.grid(True)
 plt.show()
+plt.savefig('horn.png')
+```
+
+```python
+
 ```
