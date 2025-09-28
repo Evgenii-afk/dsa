@@ -46,9 +46,7 @@ plt.show()
 
 ```
 
-```python
-
-```
+![](images\sum.png)
 
 1.3 произведение эллементов
 
@@ -88,9 +86,7 @@ plt.savefig('mult.png')
 plt.show()
 ```
 
-```python
-
-```
+![](images\mult.png)
 
 1.6. поиск минимума простым перебором
 
@@ -132,9 +128,7 @@ plt.savefig('min.png')
 plt.show()
 ```
 
-```python
-
-```
+![](images\min.png)
 
 1.4. вычисление полинома методом Горнера 
 
@@ -176,6 +170,4 @@ plt.savefig('horn.png')
 plt.show()
 ```
 
-```python
-
-```
+![](images\horn.png)
