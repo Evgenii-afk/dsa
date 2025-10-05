@@ -65,7 +65,7 @@ import matplotlib.pyplot as plt
 
 
 def multiplication_nums(v: list):
-    mult = 1
+    mult = 1.0
     for num in v:
         mult *= num
     return mult
