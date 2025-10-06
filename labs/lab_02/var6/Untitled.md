@@ -142,7 +142,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def comb_sort(arr):
-    # ваша функция сортировки
     gap = len(arr)
     shrink = 1.247
     sorted = False
@@ -261,74 +260,6 @@ for size in sizes:
         
         print(f"  {array_type:>8}: {time_taken:.6f} сек")
 
-plt.figure(figsize=(15, 10))
-
-plt.subplot(2, 2, 1)
-x_pos = np.arange(len(sizes))
-width = 0.25
-
-plt.bar(x_pos - width, results['sorted'], width, label='Упорядоченный', alpha=0.8)
-plt.bar(x_pos, results['reversed'], width, label='Обратный порядок', alpha=0.8)
-plt.bar(x_pos + width, results['random'], width, label='Случайный', alpha=0.8)
-
-plt.xlabel('Размер массива')
-plt.ylabel('Время, секунды')
-plt.title('Время сортировки для разных типов массивов')
-plt.xticks(x_pos, sizes)
-plt.legend()
-plt.grid(True, alpha=0.3)
-
-plt.subplot(2, 2, 2)
-for array_type, times in results.items():
-    plt.plot(sizes, times, 'o-', linewidth=2, markersize=6, label=array_type)
-
-plt.xlabel('Размер массива')
-plt.ylabel('Время, секунды')
-plt.title('Зависимость времени от размера массива')
-plt.xscale('log')
-plt.yscale('log')
-plt.legend()
-plt.grid(True, alpha=0.3)
-
-plt.subplot(2, 2, 3)
-ratios_reversed = [rev/srt for srt, rev in zip(results['sorted'], results['reversed'])]
-ratios_random = [rnd/srt for srt, rnd in zip(results['sorted'], results['random'])]
-
-plt.plot(sizes, ratios_reversed, 's-', label='Обратный/Упорядоченный')
-plt.plot(sizes, ratios_random, 'o-', label='Случайный/Упорядоченный')
-plt.axhline(y=1, color='red', linestyle='--', alpha=0.5)
-
-plt.xlabel('Размер массива')
-plt.ylabel('Отношение времени')
-plt.title('Относительная эффективность')
-plt.legend()
-plt.grid(True, alpha=0.3)
-
-plt.subplot(2, 2, 4)
-plt.axis('off')
-
-table_data = []
-headers = ['Размер'] + [f'{size}' for size in sizes]
-
-for array_type in ['sorted', 'reversed', 'random']:
-    row = [array_type] + [f'{time:.4f}' for time in results[array_type]]
-    table_data.append(row)
-
-table = plt.table(cellText=table_data,
-                  colLabels=headers,
-                  cellLoc='center',
-                  loc='center',
-                  bbox=[0, 0, 1, 1])
-
-table.auto_set_font_size(False)
-table.set_fontsize(10)
-table.scale(1, 2)
-
-plt.title('Таблица результатов (секунды)')
-
-plt.tight_layout()
-plt.show()
-
 plt.figure(figsize=(15, 5))
 
 colors = {'sorted': 'green', 'reversed': 'red', 'random': 'blue'}
@@ -367,6 +298,186 @@ for array_type in ['sorted', 'reversed', 'random']:
 print("СРАВНЕНИЕ ЭФФЕКТИВНОСТИ:")
 print(f"Упорядоченный массив сортируется в {results['reversed'][-1]/results['sorted'][-1]:.2f} раза медленнее")
 print(f"Случайный массив сортируется в {results['random'][-1]/results['sorted'][-1]:.2f} раза медленнее")
+```
+
+## Сравнение 
+
+```python
+import random
+import usage_time
+import matplotlib.pyplot as plt
+import numpy as np
+
+def comb_sort(arr):
+    gap = len(arr)
+    shrink = 1.247
+    sorted_flag = False
+    
+    while not sorted_flag:
+        gap = int(gap / shrink)
+        if gap <= 1:
+            gap = 1
+            sorted_flag = True
+        
+        i = 0
+        while i + gap < len(arr):
+            if arr[i] > arr[i + gap]:
+                arr[i], arr[i + gap] = arr[i + gap], arr[i]
+                sorted_flag = False
+            i += 1
+    return arr
+
+def radix_sort(arr):
+    if not arr:
+        return arr
+    
+    max_num = max(arr)
+    exp = 1
+    
+    while max_num // exp > 0:
+        counting_sort_for_radix(arr, exp)
+        exp *= 10
+    
+    return arr
+
+def counting_sort_for_radix(arr, exp):
+    n = len(arr)
+    output = [0] * n
+    count = [0] * 10
+    
+    for i in range(n):
+        index = (arr[i] // exp) % 10
+        count[index] += 1
+    
+    for i in range(1, 10):
+        count[i] += count[i - 1]
+    
+    for i in range(n - 1, -1, -1):
+        index = (arr[i] // exp) % 10
+        output[count[index] - 1] = arr[i]
+        count[index] -= 1
+    
+    for i in range(n):
+        arr[i] = output[i]
+
+sizes = [1000, 5000, 10000, 100000]
+
+def generate_arrays(size):
+    sorted_arr = list(range(size))
+    reversed_arr = list(range(size, 0, -1))
+    random_arr = [random.randint(1, size * 10) for _ in range(size)]
+    
+    return {
+        'sorted': sorted_arr,
+        'reversed': reversed_arr,
+        'random': random_arr
+    }
+
+comb_func = usage_time.get_usage_time(ndigits=6)(comb_sort)
+radix_func = usage_time.get_usage_time(ndigits=6)(radix_sort)
+
+comb_results = {
+    'sorted': [],
+    'reversed': [], 
+    'random': []
+}
+
+radix_results = {
+    'sorted': [],
+    'reversed': [], 
+    'random': []
+}
+
+print("ИЗМЕРЕНИЕ ВРЕМЕНИ СОРТИРОВКИ РАСЧЕСКОЙ")
+print("=" * 70)
+
+for size in sizes:
+    print(f"Размер массива: {size} элементов")
+    print("-" * 50)
+    
+    arrays = generate_arrays(size)
+    
+    for array_type, arr in arrays.items():
+        time_taken = comb_func(arr.copy())
+        comb_results[array_type].append(time_taken)
+        
+        print(f"  {array_type:>8}: {time_taken:.6f} сек")
+
+print("\nИЗМЕРЕНИЕ ВРЕМЕНИ ПОРАЗРЯДНОЙ СОРТИРОВКИ")
+print("=" * 70)
+
+for size in sizes:
+    print(f"Размер массива: {size} элементов")
+    print("-" * 50)
+    
+    arrays = generate_arrays(size)
+    
+    for array_type, arr in arrays.items():
+        time_taken = radix_func(arr.copy())
+        radix_results[array_type].append(time_taken)
+        
+        print(f"  {array_type:>8}: {time_taken:.6f} сек")
+
+plt.figure(figsize=(15, 5))
+
+for i, array_type in enumerate(['sorted', 'reversed', 'random'], 1):
+    plt.subplot(1, 3, i)
+    
+    plt.plot(sizes, comb_results[array_type], 'o-', color='red', 
+             linewidth=2, markersize=8, label='Comb Sort')
+    
+    plt.plot(sizes, radix_results[array_type], 's-', color='blue', 
+             linewidth=2, markersize=8, label='Radix Sort')
+    
+    for j, size in enumerate(sizes):
+        plt.annotate(f'{comb_results[array_type][j]:.4f}с', (size, comb_results[array_type][j]), 
+                    textcoords="offset points", xytext=(0,10), 
+                    ha='center', fontsize=7, color='red')
+        plt.annotate(f'{radix_results[array_type][j]:.4f}с', (size, radix_results[array_type][j]), 
+                    textcoords="offset points", xytext=(0,-15), 
+                    ha='center', fontsize=7, color='blue')
+    
+    plt.xlabel('Размер массива')
+    plt.ylabel('Время, секунды')
+    plt.title(f'Тип: {array_type}')
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.show()
+
+print("СТАТИСТИЧЕСКИЙ АНАЛИЗ - СОРТИРОВКА РАСЧЕСКОЙ")
+print("=" * 70)
+
+for array_type in ['sorted', 'reversed', 'random']:
+    times = comb_results[array_type]
+    print(f"{array_type.upper():>15}:")
+    for size, time in zip(sizes, times):
+        print(f"  {size:6d} эл.: {time:8.4f} сек")
+    
+    if len(times) > 1:
+        growth = times[-1] / times[0]
+        print(f"  Рост времени ({sizes[-1]}/{sizes[0]}): {growth:.2f}x")
+
+print("\nСТАТИСТИЧЕСКИЙ АНАЛИЗ - ПОРАЗРЯДНАЯ СОРТИРОВКА")
+print("=" * 70)
+
+for array_type in ['sorted', 'reversed', 'random']:
+    times = radix_results[array_type]
+    print(f"{array_type.upper():>15}:")
+    for size, time in zip(sizes, times):
+        print(f"  {size:6d} эл.: {time:8.4f} сек")
+    
+    if len(times) > 1:
+        growth = times[-1] / times[0]
+        print(f"  Рост времени ({sizes[-1]}/{sizes[0]}): {growth:.2f}x")
+
+print("\nСРАВНЕНИЕ ЭФФЕКТИВНОСТИ:")
+print(f"Comb Sort - обратный/упорядоченный: {comb_results['reversed'][-1]/comb_results['sorted'][-1]:.2f}x")
+print(f"Comb Sort - случайный/упорядоченный: {comb_results['random'][-1]/comb_results['sorted'][-1]:.2f}x")
+print(f"Radix Sort - обратный/упорядоченный: {radix_results['reversed'][-1]/radix_results['sorted'][-1]:.2f}x")
+print(f"Radix Sort - случайный/упорядоченный: {radix_results['random'][-1]/radix_results['sorted'][-1]:.2f}x")
+print(f"Comb/Radix на случайных данных: {comb_results['random'][-1]/radix_results['random'][-1]:.2f}x")
 ```
 
 <!-- #region -->
@@ -705,75 +816,6 @@ for size in sizes:
         
         print(f"  {array_type:>8}: {time_taken:.6f} сек")
 
-plt.figure(figsize=(15, 10))
-
-plt.subplot(2, 2, 1)
-x_pos = np.arange(len(sizes))
-width = 0.25
-
-plt.bar(x_pos - width, results['sorted'], width, label='Упорядоченный', alpha=0.8, color='green')
-plt.bar(x_pos, results['reversed'], width, label='Обратный порядок', alpha=0.8, color='red')
-plt.bar(x_pos + width, results['random'], width, label='Случайный', alpha=0.8, color='blue')
-
-plt.xlabel('Размер массива')
-plt.ylabel('Время, секунды')
-plt.title('Поразрядная сортировка: время для разных типов массивов')
-plt.xticks(x_pos, sizes)
-plt.legend()
-plt.grid(True, alpha=0.3)
-
-plt.subplot(2, 2, 2)
-colors = {'sorted': 'green', 'reversed': 'red', 'random': 'blue'}
-for array_type, times in results.items():
-    plt.plot(sizes, times, 'o-', linewidth=2, markersize=6, label=array_type, color=colors[array_type])
-
-plt.xlabel('Размер массива')
-plt.ylabel('Время, секунды')
-plt.title('Поразрядная сортировка: зависимость времени от размера массива')
-plt.xscale('log')
-plt.yscale('log')
-plt.legend()
-plt.grid(True, alpha=0.3)
-
-plt.subplot(2, 2, 3)
-ratios_reversed = [rev/srt if srt > 0 else 0 for srt, rev in zip(results['sorted'], results['reversed'])]
-ratios_random = [rnd/srt if srt > 0 else 0 for srt, rnd in zip(results['sorted'], results['random'])]
-
-plt.plot(sizes, ratios_reversed, 's-', label='Обратный/Упорядоченный', color='red')
-plt.plot(sizes, ratios_random, 'o-', label='Случайный/Упорядоченный', color='blue')
-plt.axhline(y=1, color='black', linestyle='--', alpha=0.5)
-
-plt.xlabel('Размер массива')
-plt.ylabel('Отношение времени')
-plt.title('Поразрядная сортировка: относительная эффективность')
-plt.legend()
-plt.grid(True, alpha=0.3)
-
-plt.subplot(2, 2, 4)
-plt.axis('off')
-
-table_data = []
-headers = ['Тип массива'] + [f'{size}' for size in sizes]
-
-for array_type in ['sorted', 'reversed', 'random']:
-    row = [array_type] + [f'{time:.6f}' for time in results[array_type]]
-    table_data.append(row)
-
-table = plt.table(cellText=table_data,
-                  colLabels=headers,
-                  cellLoc='center',
-                  loc='center',
-                  bbox=[0.1, 0.1, 0.9, 0.8])
-
-table.auto_set_font_size(False)
-table.set_fontsize(9)
-table.scale(1, 2)
-
-plt.title('Поразрядная сортировка: таблица результатов (секунды)', fontweight='bold', y=0.9)
-
-plt.tight_layout()
-plt.show()
-
 plt.figure(figsize=(15, 5))
 
 colors = {'sorted': 'green', 'reversed': 'red', 'random': 'blue'}
@@ -812,13 +854,6 @@ for array_type in ['sorted', 'reversed', 'random']:
 print("СРАВНЕНИЕ ЭФФЕКТИВНОСТИ:")
 print(f"Обратный порядок сортируется в {results['reversed'][-1]/results['sorted'][-1]:.2f} раза медленнее упорядоченного")
 print(f"Случайный массив сортируется в {results['random'][-1]/results['sorted'][-1]:.2f} раза медленнее упорядоченного")
-
-print("АНАЛИЗ ВРЕМЕННОЙ СЛОЖНОСТИ:")
-print("Поразрядная сортировка имеет сложность O(d*n), где:")
-print("  d - количество разрядов в максимальном числе")
-print("  n - количество элементов")
-print("Для массивов размером 100000 элементов максимальное число ~ 1,000,000 (6 разрядов)")
-print("Ожидаемое время: O(6 * n) = O(n) - линейная сложность")
 ```
 
 <!-- #region -->
