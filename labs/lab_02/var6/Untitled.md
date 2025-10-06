@@ -780,7 +780,7 @@ def counting_sort_for_radix(arr, exp):
     for i in range(n):
         arr[i] = output[i]
 
-sizes = [1000, 5000, 10000, 100000]
+sizes = [1000, 2000, 4000, 8000]
 
 def generate_arrays(size):
     sorted_arr = list(range(size))
