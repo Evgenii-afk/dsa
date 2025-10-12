@@ -13,7 +13,7 @@ jupyter:
 ---
 
 ## Лабораторная работа №3
-# Вариант 6
+## Вариант 6
 Цели лабораторной работы:
 - Изучить, что такое линейный список — структура данных, где элементы связаны ссылками, а не расположены подряд в памяти.
 - Научиться создавать и использовать односвязные линейные списки в программе.
@@ -22,7 +22,7 @@ jupyter:
 - Научиться писать функции для обработки списков (например, удаление повторов, разворот, сортировка).
 - Приобрести умения структурного и модульного программирования через реализацию этих задач.
 
-# Задание 1 
+## Задание 1 
 Версия 1:
 
 ```python
@@ -127,12 +127,10 @@ class SingleLinkedListV2(SingleLinkedListV1):
         if self._head is None:
             return False
         
-        # Если удаляем голову
         if self._head.data == value:
             self.remove_first_node()
             return True
         
-        # Поиск элемента для удаления
         current = self._head
         while current.next:
             if current.next.data == value:
@@ -214,12 +212,10 @@ class SingleLinkedListV4(SingleLinkedListV3):
         if self._head is None:
             return False
         
-        # Вставка перед головой
         if self._head.data == target_value:
             self.insert_first_node(new_value)
             return True
         
-        # Поиск узла, предшествующего целевому
         current = self._head
         while current.next:
             if current.next.data == target_value:
@@ -244,7 +240,7 @@ class SingleLinkedListV4(SingleLinkedListV3):
     def replace_previous_node(self, target_value: Any, new_value: Any) -> bool:
         '''Заменить значение в предыдущем узле относительно узла с заданным значением'''
         if self._head is None or self._head.data == target_value:
-            return False  # У головы нет предыдущего узла
+            return False  
         
         current = self._head
         while current.next:
@@ -474,7 +470,6 @@ class SingleLinkedListV6(SingleLinkedListV5):
         if self._head.next == target_node:
             return self.remove_first_node()
         
-        # Находим узел за два до целевого
         current = self._head
         while current.next and current.next.next:
             if current.next.next == target_node:
@@ -487,7 +482,6 @@ class SingleLinkedListV6(SingleLinkedListV5):
 
     def insert_before_node(self, target_value: Any, new_value: Any) -> bool:
         '''Переопределение для использования оптимизации при наличии узла'''
-        # Сначала пытаемся найти узел
         target_node = self.find_node(target_value)
         if target_node:
             return self.insert_before_node_optimized(target_node, new_value)
@@ -627,10 +621,10 @@ class SingleLinkedListV6(SingleLinkedListV5):
             self._tail = current    
 ```
 
-# Задание 2
+## Задание 2
 Сложность: O(n), Память: O(1)
 
-# Задание 3
+## Задание 3
 1. Лучший случай (уже отсортированный список):
 - Вставка всегда происходит в начало: O(1) на элемент
 - Итого: O(n)
@@ -643,7 +637,7 @@ class SingleLinkedListV6(SingleLinkedListV5):
 - В среднем для каждого элемента нужно пройти половину отсортированной части
 - Итого: O(n²)
 
-# Задание 4
+## Задание 4
 
 ```python
 def remove_consecutive_duplicates(linked_list: 'SingleLinkedListV6') -> None:
@@ -663,3 +657,22 @@ def remove_consecutive_duplicates(linked_list: 'SingleLinkedListV6') -> None:
             # Переходим к следующему узлу
             current = current.next
 ```
+
+## Таблица из контрольных вопросов
+| Операция | Односвязный список (без tail) | Односвязный список (с tail) | Двусвязный список (с tail) |
+| :--- | :---: | :---: | :---: |
+| Вставка в начало | O(1) | O(1) | O(1) |
+| Вставка в конец | O(n) | O(1) | O(1) |
+| Удаление из начала | O(1) | O(1) | O(1) |
+| Удаление из конца | O(n) | O(n) | O(1) |
+| Поиск элемента по значению | O(n) | O(n) | O(n) |
+| Вставка после известного узла | O(1) | O(1) | O(1) |
+| Удаление известного узла | O(n) | O(n) | O(1) |
+| Доступ к элементу по индексу | O(n) | O(n) | O(n) |
+
+## Выводы
+- Линейные списки — это важная структура данных, позволяющая динамически хранить и обрабатывать упорядоченные наборы элементов без необходимости contiguous памяти.
+- В ходе лабораторной работы были изучены основные виды списков (односвязный, двусвязный, кольцевой), а также реализованы базовые операции над ними: добавление, удаление, обход.
+- Выполнение заданий позволило закрепить навыки работы с динамической памятью и освоить приемы структурного программирования на языке C++.
+- Реализация функций обработки списков (удаление повторов, реверс, сортировка) помогла понять особенности алгоритмов и их временную сложность при работе со связными структурами.
+- Полученные знания и практические навыки пригодятся при работе с более сложными структурами данных и алгоритмами в программировании.
