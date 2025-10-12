@@ -7,8 +7,9 @@ jupyter:
       format_version: '1.3'
       jupytext_version: 1.17.3
   kernelspec:
-    display_name: ''
-    name: ''
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
 ---
 
 ## Лабораторная работа №3
@@ -292,6 +293,373 @@ class SingleLinkedListV4(SingleLinkedListV3):
         return None
 ```
 
-```python
+Версия 5: Добавлен указатель на хвост для оптимизации операций
 
+```python
+class SingleLinkedListV5(SingleLinkedListV4):
+        def __init__(self) -> Self:
+        '''Инициализация с указателем на хвост'''
+        super().__init__()
+        self._tail = None
+
+    def insert_first_node(self, value: Any) -> None:
+        '''Добавление в начало с обновлением хвоста'''
+        super().insert_first_node(value)
+        if self.size == 1:
+            self._tail = self._head
+
+    def insert_last_node(self, value: Any) -> None:
+        '''Добавление в конец за O(1) с использованием хвоста'''
+        if self._head is None:
+            self.insert_first_node(value)
+        else:
+            new_node = Node(value)
+            self._tail.next = new_node
+            self._tail = new_node
+            self.size += 1
+
+    def remove_first_node(self) -> Any:
+        '''Удаление из начала с обновлением хвоста'''
+        result = super().remove_first_node()
+        if self.size == 0:
+            self._tail = None
+        return result
+
+    def remove_last_node(self) -> Any:
+        '''Удаление из конца с обновлением хвоста'''
+        if self._head is None:
+            raise ValueError("Список пуст")
+        
+        if self._head.next is None:
+            return self.remove_first_node()
+        
+        current = self._head
+        while current.next != self._tail:
+            current = current.next
+        
+        result = self._tail.data
+        current.next = None
+        self._tail = current
+        self.size -= 1
+        
+        return result
+
+    def find_node(self, value: Any) -> Node:
+        '''Оптимизированный поиск: O(1) для головы и хвоста'''
+        if self._head is None:
+            return None
+        
+        if self._head.data == value:
+            return self._head
+        
+        if self._tail and self._tail.data == value:
+            return self._tail
+        
+        return super().find_node(value)
+
+    def insert_after_node(self, target_value: Any, new_value: Any) -> bool:
+        '''Оптимизированная вставка после узла: O(1) для хвоста'''
+        if self._tail and self._tail.data == target_value:
+            new_node = Node(new_value)
+            self._tail.next = new_node
+            self._tail = new_node
+            self.size += 1
+            return True
+        
+        return super().insert_after_node(target_value, new_value)
+
+    def replace_node(self, old_value: Any, new_value: Any) -> bool:
+        '''Оптимизированная замена: O(1) для головы и хвоста'''
+        if self._head is None:
+            return False
+        
+        if self._head.data == old_value:
+            self._head.data = new_value
+            return True
+        
+        if self._tail and self._tail.data == old_value:
+            self._tail.data = new_value
+            return True
+        
+        return super().replace_node(old_value, new_value)
+
+    def remove_node(self, value: Any) -> bool:
+        '''Оптимизированное удаление: O(1) для головы и хвоста'''
+        if self._head is None:
+            return False
+        
+        if self._head.data == value:
+            self.remove_first_node()
+            return True
+        
+        if self._tail and self._tail.data == value:
+            self.remove_last_node()
+            return True
+        
+        return super().remove_node(value)
+
+    def replace_next_node(self, target_value: Any, new_value: Any) -> bool:
+        '''Оптимизированная замена следующего узла: O(1) проверка для хвоста'''
+        if self._tail and self._tail.data == target_value:
+            return False  
+        
+        return super().replace_next_node(target_value, new_value)
+
+    def remove_next_node(self, target_value: Any) -> Any:
+        '''Оптимизированное удаление следующего узла: O(1) проверка для хвоста'''
+        if self._tail and self._tail.data == target_value:
+            return None  
+        
+        return super().remove_next_node(target_value)
+
+    def find_next_node(self, value: Any) -> Any:
+        '''Оптимизированный поиск следующего узла: O(1) проверка для хвоста'''
+        if self._tail and self._tail.data == value:
+            return None  
+        
+        return super().find_next_node(value)
+
+    def get_tail(self) -> Any:
+        '''Получить значение хвоста за O(1)'''
+        return self._tail.data if self._tail else None
+
+    def __str__(self):
+        '''Строковое представление с информацией о хвосте'''
+        base_str = super().__str__()
+        tail_info = f" (tail: {self.get_tail()})" if self._tail else " (tail: None)"
+        return base_str + tail_info
+```
+
+Версия 6: Оптимизация операций через замену значений
+
+```python
+class SingleLinkedListV6(SingleLinkedListV5):
+
+    def insert_before_node_optimized(self, target_node: Node, new_value: Any) -> bool:
+        '''Оптимизированная вставка перед узлом за O(1) через замену значений'''
+        if target_node is None:
+            return False
+        
+        new_node = Node(target_node.data, target_node.next)
+        target_node.data = new_value
+        target_node.next = new_node
+        
+        if self._tail == target_node:
+            self._tail = new_node
+        
+        self.size += 1
+        return True
+
+    def remove_node_optimized(self, target_node: Node) -> Any:
+        '''Оптимизированное удаление узла за O(1) через замену значений'''
+        if target_node is None or target_node.next is None:
+            return None
+        
+        removed_data = target_node.data
+        target_node.data = target_node.next.data
+        target_node.next = target_node.next.next
+        
+        if target_node.next is None:
+            self._tail = target_node
+        
+        self.size -= 1
+        return removed_data
+
+    def remove_previous_node_optimized(self, target_node: Node) -> Any:
+        '''Оптимизированное удаление предыдущего узла за O(1)'''
+        if (target_node is None or self._head is None or 
+            self._head == target_node or self._head.next == target_node):
+            return None
+        
+        if self._head.next == target_node:
+            return self.remove_first_node()
+        
+        # Находим узел за два до целевого
+        current = self._head
+        while current.next and current.next.next:
+            if current.next.next == target_node:
+                removed_data = current.next.data
+                current.next = target_node
+                self.size -= 1
+                return removed_data
+            current = current.next
+        return None
+
+    def insert_before_node(self, target_value: Any, new_value: Any) -> bool:
+        '''Переопределение для использования оптимизации при наличии узла'''
+        # Сначала пытаемся найти узел
+        target_node = self.find_node(target_value)
+        if target_node:
+            return self.insert_before_node_optimized(target_node, new_value)
+        return False
+
+    def remove_node(self, value: Any) -> bool:
+        '''Переопределение для использования оптимизации при наличии узла'''
+        if self._head and self._head.data == value:
+            self.remove_first_node()
+            return True
+        
+        if self._tail and self._tail.data == value:
+            self.remove_last_node()
+            return True
+        
+        target_node = self.find_node(value)
+        if target_node:
+            self.remove_node_optimized(target_node)
+            return True
+        
+        return False
+
+    def remove_previous_node(self, target_value: Any) -> Any:
+        '''Переопределение для использования оптимизации при наличии узла'''
+        if self._head is None or self._head.data == target_value:
+            return None
+        
+        target_node = self.find_node(target_value)
+        if target_node:
+            return self.remove_previous_node_optimized(target_node)
+        return None
+
+    def reverse(self) -> None:
+        '''Переворот списка'''
+        prev = None
+        current = self._head
+        self._tail = self._head
+        
+        while current:
+            next_node = current.next
+            current.next = prev
+            prev = current
+            current = next_node
+        
+        self._head = prev
+
+    def sort(self) -> None:
+        '''Сортировка списка (пузырьковая сортировка)'''
+        if self.size < 2:
+            return
+        
+        for i in range(self.size):
+            current = self._head
+            for j in range(self.size - i - 1):
+                if current.data > current.next.data:
+                    current.data, current.next.data = current.next.data, current.data
+                current = current.next
+
+    def is_sorted(self) -> bool:
+        '''
+        Индивидуальное задание (вариант 6):
+        Проверить, является ли список упорядоченным по возрастанию
+        '''
+        if self.size < 2:
+            return True
+        
+        current = self._head
+        while current.next:
+            if current.data > current.next.data:
+                return False
+            current = current.next
+        
+        return True
+
+    def get_middle_node(self) -> Node:
+        '''Найти средний узел за один проход (для демонстрации)'''
+        if self._head is None:
+            return None
+        
+        slow = self._head
+        fast = self._head
+        
+        while fast and fast.next:
+            slow = slow.next
+            fast = fast.next.next
+        
+        return slow
+
+    #Задание 2
+
+    def reverse(self) -> None:
+        if self._head is None or self._head.next is None:
+            return
+    
+        prev = None
+        current = self._head
+        self._tail = self._head
+        
+        while current:
+            next_node = current.next
+            current.next = prev
+            prev = current
+            current = next_node
+        
+        self._head = prev
+
+    #Задание 3 (сортировка вставками)
+    
+    def sort_insertion(self) -> None:
+        if self.size < 2:
+            return
+        
+        sorted_head = None  
+        
+        current = self._head
+        while current:
+            next_node = current.next  
+            
+            if sorted_head is None or current.data < sorted_head.data:
+                current.next = sorted_head
+                sorted_head = current
+            else:
+                temp = sorted_head
+                while temp.next and temp.next.data < current.data:
+                    temp = temp.next
+                current.next = temp.next
+                temp.next = current
+            
+            current = next_node
+        
+        self._head = sorted_head
+        
+        if self._head:
+            current = self._head
+            while current.next:
+                current = current.next
+            self._tail = current    
+```
+
+# Задание 2
+Сложность: O(n), Память: O(1)
+
+# Задание 3
+1. Лучший случай (уже отсортированный список):
+- Вставка всегда происходит в начало: O(1) на элемент
+- Итого: O(n)
+2. Худший случай (обратно отсортированный список):
+- Каждый новый элемент вставляется в конец отсортированной части
+- Для i-го элемента нужно пройти i узлов
+- Сумма: 1 + 2 + 3 + ... + (n-1) = n(n-1)/2
+- Итого: O(n²)
+3. Средний случай:
+- В среднем для каждого элемента нужно пройти половину отсортированной части
+- Итого: O(n²)
+
+# Задание 4
+
+```python
+def remove_consecutive_duplicates(linked_list: 'SingleLinkedListV6') -> None:
+    if linked_list._head is None or linked_list._head.next is None:
+        return
+    
+    current = linked_list._head
+    
+    while current and current.next:
+        if current.data == current.next.data:
+            current.next = current.next.next
+            linked_list.size -= 1
+            
+            if current.next is None:
+                linked_list._tail = current
+        else:
+            # Переходим к следующему узлу
+            current = current.next
 ```
