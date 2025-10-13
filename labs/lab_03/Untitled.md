@@ -261,13 +261,11 @@ class SingleLinkedListV4(SingleLinkedListV3):
     def remove_previous_node(self, target_value: Any) -> Any:
         '''Удалить предыдущий узел относительно узла с заданным значением'''
         if self._head is None or self._head.data == target_value:
-            return None  # У головы нет предыдущего узла
+            return None  
         
-        # Если целевой узел - второй в списке
         if self._head.next and self._head.next.data == target_value:
             return self.remove_first_node()
         
-        # Поиск узла, который находится за два до целевого
         current = self._head
         while current.next and current.next.next:
             if current.next.next.data == target_value:
@@ -539,22 +537,6 @@ class SingleLinkedListV6(SingleLinkedListV5):
                 if current.data > current.next.data:
                     current.data, current.next.data = current.next.data, current.data
                 current = current.next
-
-    def is_sorted(self) -> bool:
-        '''
-        Индивидуальное задание (вариант 6):
-        Проверить, является ли список упорядоченным по возрастанию
-        '''
-        if self.size < 2:
-            return True
-        
-        current = self._head
-        while current.next:
-            if current.data > current.next.data:
-                return False
-            current = current.next
-        
-        return True
 
     def get_middle_node(self) -> Node:
         '''Найти средний узел за один проход (для демонстрации)'''
