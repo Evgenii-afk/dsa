@@ -512,20 +512,6 @@ class SingleLinkedListV6(SingleLinkedListV5):
             return self.remove_previous_node_optimized(target_node)
         return None
 
-    def reverse(self) -> None:
-        '''Переворот списка'''
-        prev = None
-        current = self._head
-        self._tail = self._head
-        
-        while current:
-            next_node = current.next
-            current.next = prev
-            prev = current
-            current = next_node
-        
-        self._head = prev
-
     def sort(self) -> None:
         '''Сортировка списка (пузырьковая сортировка)'''
         if self.size < 2:
