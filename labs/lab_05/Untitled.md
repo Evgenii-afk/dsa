@@ -100,7 +100,6 @@ ht.insert("apple", 10)
 assert ht.search("apple") == 10, "Ошибка обновления значения"
 print("✓ Тест обновления значения пройден")
 
-# Тест удаления
 assert ht.delete("banana") == True, "Ошибка удаления существующего ключа"
 assert ht.search("banana") is None, "Ошибка: ключ не удален"
 assert ht.delete("unknown") == False, "Ошибка удаления несуществующего ключа"
